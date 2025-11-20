@@ -1,0 +1,80 @@
+# %YAML:1.0
+
+#common parameters
+#support: 1 imu 1 cam; 1 imu 2 cam: 2 cam; 
+imu: 1         
+num_of_cam: 2  
+
+imu_topic: "/imu0"
+image0_topic: "/cam0/image_raw"
+image1_topic: "/cam1/image_raw"
+seg_image0_topic: "/cam0/segmentation"
+output_path: "~/output/"
+
+cam0_calib: "cam0_pinhole.yaml"
+cam1_calib: "cam1_pinhole.yaml"
+image_width: 752
+image_height: 480
+
+body_T_cam0: # !!opencv-matrix
+   rows: 4
+   cols: 4
+   dt: d
+   data: [0.0, 0.0, 1.0, 0.0,
+          1.0, 0.0, 0.0, 0.0,
+          0.0, 1.0, 0.0, 0.0,
+          0.0, 0.0, 0.0, 1.0]
+
+body_T_cam1: # !!opencv-matrix
+   rows: 4
+   cols: 4
+   dt: d
+   data: [0.0, 0.0, 1.0, 0.0,
+          1.0, 0.0, 0.0, 0.05,
+          0.0, 1.0, 0.0, 0.0,
+          0.0, 0.0, 0.0, 1.0]
+
+#Multiple thread support
+multiple_thread: 1
+
+#feature traker paprameters
+max_cnt: 1000           # max feature number in feature tracking
+min_dist: 30            # min distance between two features 
+F_threshold: 0.1        # ransac threshold [pixel] 0.1
+static_threshold: 0.08  # vehicle static threshold [pixel]
+show_track: 1           # publish tracking image as topic
+flow_back: 1            # perform forward and backward optical flow to improve feature tracking accuracy
+
+# MSCKF params          # The more accurate parameters you provide, the better performance
+# sliding window params
+min_slw: 3
+max_slw: 10
+
+# initial convariance
+P0/q: 0.05              # [deg]
+P0/p: 0.01              # [m]
+P0/v: 0.01              # [m/s]
+P0/ba: 1.0e-1           # [m/s^2]      :  10 mg
+P0/bg: 1.0e-2           # [rad/s]      :  deg/hr  
+
+# imu params (optimal for VIODE dataset based on Ablation study and AIRSIM paper) 
+Q/na: 0.02               # [m/s^2]                  : Accel. noise / Angular Random Walk  (White noise)
+Q/ng: 0.005              # [rad/s]                  : Gyro.  noise / Velocity Random Walk (White noise)
+Q/wa: 0.002              # [m/(s^2*sqrt(Hz = s))]   : Accel. bias instability  (White noise)
+Q/wg: 4.0e-6            # [rad/(s*sqrt(Hz = s))]   : Gyro.  bias instability  (White noise)
+# Q/na: 0.2               # [m/s^2]                  : Accel. bias repetability (White noise)
+# Q/ng: 0.05              # [rad/s]                  : Gyro.  bias repetability (White noise)
+# Q/wa: 0.02              # [m/(s^2*sqrt(Hz = s))]   : Accel. bias instability  (White noise)
+# Q/wg: 4.0e-5            # [rad/(s*sqrt(Hz = s))]   : Gyro.  bias instability  (White noise)
+g_norm: 9.81007         # gravity magnitude
+
+# vision params
+R/nf: 2                 # [pix]       : feature point measurement noise standard deviation.
+
+# zupt params
+R/nz: 1.0e-3            # [m/s]       : zupt veloctiy measurement
+
+#unsynchronization params
+estimate_td: 0                      # online estimate time offset between camera and imu
+td: 0.0                             # initial value of time offset. unit: s. readed image clock + td = real image clock (IMU clock)
+
