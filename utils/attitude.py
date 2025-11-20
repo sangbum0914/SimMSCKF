@@ -35,8 +35,6 @@ class Attitude:
         Returns:
             R: _description_
         """
-        if eul.shape[0] != 3:
-            raise ValueError(f"Error of the euler angle input type")
         phi_ = eul[0]
         theta_ = eul[1]
         psi_ = eul[2]
@@ -190,8 +188,6 @@ class Attitude:
 
         # Scalar part of the result
         q_result[0] = qs * ps - np.dot(q_vec, p_vec)
-        if q_result.dtype == 'complex128':
-            stop = 1
         
         # Vector part of the result
         q_result[1:4] = qs * p_vec + ps * q_vec + np.cross(q_vec, p_vec)
@@ -244,24 +240,3 @@ class Attitude:
         qn = q_/np.linalg.norm(q_)
         return qn
         
-    def align_INS(fb0_, wb0_):
-        """Initial two step coarse alignment of inertial navigation system
-        Args:
-            fb0_ (np.array): Nx3, accel. samples
-            wb0_ (np.array): Nx3, gyro. samples
-
-        Returns:
-            q0  (np.array): initial attitude
-            bg0 (np.array): initial gyro bias             
-        """
-        fb0_bar = np.mean(fb0_, axis=0)
-        wb0_bar = np.mean(wb0_, axis=0)
-        
-        roll  = np.arctan2(-fb0_bar[1], -fb0_bar[2])
-        pitch = np.arctan(fb0_bar[0]/np.sqrt(fb0_bar[1]**2 + fb0_bar[2]**2))
-        yaw = 0
-        eul = np.array([roll, pitch, yaw])
-        
-        q0 = Attitude.euler2quat(eul)
-        bg0 = np.array(wb0_bar)              
-        return q0, bg0

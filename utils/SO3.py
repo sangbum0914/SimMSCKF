@@ -57,12 +57,6 @@ class SO3:
         return phi
 
     def skew(vec_):
-        """Return a skew-symmetric form of a vector
-        Args:
-            vec_ (np.array): (3,) vector
-        Returns:
-            vec_x: skew_symmetric matrix
-        """
         vec_x = np.array([[0,           -vec_[2],   vec_[1]],
                           [vec_[2],     0,          -vec_[0]],
                           [-vec_[1],    vec_[0],    0]])
